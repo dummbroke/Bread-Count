@@ -3,125 +3,56 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="4dp"
+    android:layout_marginBottom="8dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="0dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="@color/charcoal_gray"
-    app:cardBackgroundColor="@color/warm_ash_gray">
+    app:cardElevation="4dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Item Name and Price -->
-        <LinearLayout
-            android:id="@+id/itemInfoLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/actionsLayout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/itemNameText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name: "
-                android:textColor="@color/graphite_black"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:id="@+id/itemName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5 Peso Bread"
-                android:textColor="@color/graphite_black"
-                android:textSize="16sp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/priceLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/actionsLayout"
-            app:layout_constraintTop_toBottomOf="@id/itemInfoLayout">
-
-            <TextView
-                android:id="@+id/priceLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Price: ₱"
-                android:textColor="@color/graphite_black"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:id="@+id/priceValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5.00"
-                android:textColor="@color/graphite_black"
-                android:textSize="16sp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/quantityLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/actionsLayout"
-            app:layout_constraintTop_toBottomOf="@id/priceLayout">
-
-            <TextView
-                android:id="@+id/quantityLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Quantity: "
-                android:textColor="@color/graphite_black"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:id="@+id/quantityValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="100"
-                android:textColor="@color/graphite_black"
-                android:textSize="16sp"/>
-        </LinearLayout>
-
-        <!-- Edit and Delete buttons -->
-        <LinearLayout
-            android:id="@+id/actionsLayout"
+        <TextView
+            android:id="@+id/itemName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/graphite_black"/>
 
-            <ImageButton
-                android:id="@+id/editButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginBottom="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_edit"/>
+        <TextView
+            android:id="@+id/itemCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/graphite_black"
+            android:layout_marginTop="4dp"/>
 
-            <ImageButton
-                android:id="@+id/deleteButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_delete"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/itemPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/electric_blue"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/itemQuantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/graphite_black"
+                android:layout_marginStart="16dp"/>
+
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView> 

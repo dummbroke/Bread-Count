@@ -21,8 +21,8 @@
 
     <!-- Navigation Colors -->
     <color name="nav_background">@color/espresso_black</color>
-    <color name="nav_active">@color/golden_honey</color>
-    <color name="nav_inactive">@color/charcoal_gray</color>
+    <color name="nav_selected">#FFB84D</color>
+    <color name="nav_unselected">@color/white</color>
 
     <!-- Interactive Elements -->
     <color name="spinner_background">@color/creamy_vanilla</color>
@@ -50,8 +50,4 @@
     <!-- Action Button Colors -->
     <color name="fab_background">@color/electric_blue</color>
     <color name="fab_icon">@color/soft_pearl_white</color>
-
-    <!-- Bottom Navigation Colors -->
-    <color name="bottom_nav_icon_color">@color/nav_active</color>
-    <color name="bottom_nav_text_color">@color/nav_active</color>
 </resources>

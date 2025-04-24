@@ -1,11 +1,26 @@
 package com.dummbroke.bread_count.inventory
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dummbroke.bread_count.R
+import com.dummbroke.bread_count.adapter.InventoryAdapter
+import com.dummbroke.bread_count.model.InventoryItem
+import com.dummbroke.bread_count.utils.FirestoreUtils
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +36,10 @@ class InventoryPage : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var categorySpinner: Spinner
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: InventoryAdapter
+    private var firestoreListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +56,120 @@ class InventoryPage : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_inventory_page, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        // Initialize views
+        categorySpinner = view.findViewById(R.id.categorySpinner)
+        recyclerView = view.findViewById(R.id.inventoryRecyclerView)
+        val addItemButton = view.findViewById<ExtendedFloatingActionButton>(R.id.addItemButton)
+
+        // Setup RecyclerView
+        adapter = InventoryAdapter()
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
+
+        // Setup category spinner
+        setupCategorySpinner()
+
+        // Setup add item button
+        addItemButton.setOnClickListener {
+            showAddItemDialog()
+        }
+
+        // Setup Firestore listener
+        setupFirestoreListener()
+    }
+
+    private fun setupCategorySpinner() {
+        val categories = arrayOf("Display Bread", "Display Beverages", "Delivery Bread")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        categorySpinner.adapter = adapter
+    }
+
+    private fun showAddItemDialog() {
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(R.layout.dialog_add_inventory_item)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        val optionSpinner = dialog.findViewById<Spinner>(R.id.optionSpinner)
+        val itemNameInput = dialog.findViewById<android.widget.EditText>(R.id.itemNameInput)
+        val itemPriceInput = dialog.findViewById<android.widget.EditText>(R.id.itemPriceInput)
+        val cancelButton = dialog.findViewById<android.widget.Button>(R.id.cancelButton)
+        val confirmButton = dialog.findViewById<android.widget.Button>(R.id.confirmButton)
+
+        // Setup option spinner
+        val categories = arrayOf("Display Bread", "Display Beverages", "Delivery Bread")
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        optionSpinner.adapter = spinnerAdapter
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        confirmButton.setOnClickListener {
+            val name = itemNameInput.text.toString().trim()
+            val price = itemPriceInput.text.toString().trim()
+            val category = optionSpinner.selectedItem.toString()
+
+            if (name.isEmpty() || price.isEmpty()) {
+                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            try {
+                val priceValue = price.toDouble()
+                val newItem = InventoryItem(
+                    name = name,
+                    category = category,
+                    price = priceValue,
+                    quantity = 0
+                )
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        FirestoreUtils.createDocument("products", newItem.id, newItem)
+                        dialog.dismiss()
+                    } catch (e: Exception) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            Toast.makeText(requireContext(), "Error adding item: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            } catch (e: NumberFormatException) {
+                Toast.makeText(requireContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun setupFirestoreListener() {
+        firestoreListener = FirestoreUtils.db.collection("products")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Toast.makeText(requireContext(), "Error listening to updates: ${error.message}", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+
+                val items = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(InventoryItem::class.java)
+                } ?: emptyList()
+
+                adapter.updateItems(items)
+            }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        firestoreListener?.remove()
     }
 
     companion object {
