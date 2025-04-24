@@ -1,17 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- Base Theme Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary">#6200EE</color>
-    <color name="primary_dark">#3700B3</color>
-    <color name="primary_light">#BB86FC</color>
-    <color name="accent">#03DAC5</color>
-    <color name="gray">#757575</color>
-    <color name="bottom_nav_icon_color">@color/primary</color>
-    <color name="bottom_nav_text_color">@color/primary</color>
+
+    <!-- Background Colors -->
+    <color name="soft_pearl_white">#F8F9FA</color>
+    <color name="warm_ash_gray">#E0E0E0</color>
+    <color name="creamy_vanilla">#FAF8F2</color>
+
+    <!-- Text Colors -->
+    <color name="graphite_black">#2D2D2D</color>
+    <color name="espresso_black">#2D2C2F</color>
+
+    <!-- Accent Colors -->
+    <color name="golden_honey">#FFC466</color>
+    <color name="charcoal_gray">#4A4A4A</color>
+    <color name="electric_blue">#3B82F6</color>
+    <color name="soft_latte_beige">#F3E5AB</color>
+
+    <!-- Navigation Colors -->
+    <color name="nav_background">@color/espresso_black</color>
+    <color name="nav_active">@color/golden_honey</color>
+    <color name="nav_inactive">@color/charcoal_gray</color>
+
+    <!-- Interactive Elements -->
+    <color name="spinner_background">@color/creamy_vanilla</color>
+    <color name="spinner_text">@color/graphite_black</color>
+    <color name="spinner_arrow">@color/golden_honey</color>
+    
+    <!-- Quantity Buttons -->
+    <color name="quantity_btn_bg">@color/golden_honey</color>
+    <color name="quantity_btn_text">@color/espresso_black</color>
+
+    <!-- Toggle Colors -->
+    <color name="toggle_inactive_bg">@color/warm_ash_gray</color>
+    <color name="toggle_inactive_handle">@color/charcoal_gray</color>
+    <color name="toggle_active_bg">@color/golden_honey</color>
+    <color name="toggle_active_handle">@color/soft_pearl_white</color>
+
+    <!-- Input Fields -->
+    <color name="input_background">@color/soft_latte_beige</color>
+    <color name="input_text">@color/espresso_black</color>
+
+    <!-- Card Colors -->
+    <color name="card_background">@color/warm_ash_gray</color>
+    <color name="card_border">@color/charcoal_gray</color>
+
+    <!-- Action Button Colors -->
+    <color name="fab_background">@color/electric_blue</color>
+    <color name="fab_icon">@color/soft_pearl_white</color>
+
+    <!-- Bottom Navigation Colors -->
+    <color name="bottom_nav_icon_color">@color/nav_active</color>
+    <color name="bottom_nav_text_color">@color/nav_active</color>
 </resources>
