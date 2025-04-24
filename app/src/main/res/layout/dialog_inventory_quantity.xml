@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="32dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update Item Quantity"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Quantity"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+
+            <ImageButton
+                android:id="@+id/decrementButton"
+                android:layout_width="20sp"
+                android:layout_height="3.5sp"
+                android:layout_marginEnd="13dp"
+                android:backgroundTint="@color/soft_pearl_white"
+                android:src="@drawable/minus_ic_button"/>
+
+            <EditText
+                android:id="@+id/quantityEditText"
+                android:layout_width="80dp"
+                android:layout_height="48dp"
+                android:background="@drawable/edit_text_bg"
+                android:inputType="number"
+                android:textAlignment="center"
+                android:text="2"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"/>
+
+            <ImageButton
+                android:id="@+id/incrementButton"
+                android:layout_width="48sp"
+                android:layout_height="48sp"
+                android:adjustViewBounds="true"
+                android:backgroundTint="@color/soft_pearl_white"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/add_button"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#FF6B6B"
+                android:layout_marginEnd="16dp"
+                app:cornerRadius="24dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/updateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Update"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#FFB84D"
+                app:cornerRadius="24dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView> 

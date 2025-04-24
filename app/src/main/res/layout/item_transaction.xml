@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="8dp">
+
+    <TextView
+        android:id="@+id/nameText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Bread"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:textColor="@color/graphite_black"/>
+
+    <TextView
+        android:id="@+id/optionText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.2"
+        android:text="Display Bread"
+        android:textSize="15sp"
+        android:textColor="@color/graphite_black"/>
+
+    <TextView
+        android:id="@+id/priceText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.8"
+        android:text="₱5.00"
+        android:textSize="15sp"
+        android:textColor="@color/graphite_black"/>
+
+    <TextView
+        android:id="@+id/amountText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.8"
+        android:text="10"
+        android:textSize="15sp"
+        android:textColor="@color/graphite_black"/>
+
+    <TextView
+        android:id="@+id/totalText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.8"
+        android:text="₱50"
+        android:textSize="15sp"
+        android:textColor="@color/graphite_black"/>
+
+</LinearLayout> 

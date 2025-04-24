@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="32dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add new Item"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="24dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Option:"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="8dp"/>
+
+            <Spinner
+                android:id="@+id/optionSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/spinner_background"
+                android:popupBackground="@color/creamy_vanilla"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Input Item:"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/itemNameInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="5 Peso Bread"
+                android:background="@drawable/edit_text_bg"
+                android:paddingHorizontal="16dp"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Item Price:"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/itemPriceInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="₱5"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_bg"
+                android:paddingHorizontal="16dp"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#FF6B6B"
+                android:layout_marginEnd="16dp"
+                app:cornerRadius="24dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/confirmButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#FFB84D"
+                app:cornerRadius="24dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView> 
