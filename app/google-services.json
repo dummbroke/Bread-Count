@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1095519344796",
+    "project_id": "bread-count",
+    "storage_bucket": "bread-count.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095519344796:android:7c0879a906bb3e425f3559",
+        "android_client_info": {
+          "package_name": "com.dummbroke.bread_count"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpSkMdCrPmTskRJJl2do5y-lUhhbG97LI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

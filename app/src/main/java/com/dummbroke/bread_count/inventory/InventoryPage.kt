@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
@@ -21,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -92,7 +94,9 @@ class InventoryPage : Fragment() {
 
     private fun showAddItemDialog() {
         val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_add_inventory_item)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -106,8 +110,8 @@ class InventoryPage : Fragment() {
 
         // Setup option spinner
         val categories = arrayOf("Display Bread", "Display Beverages", "Delivery Bread")
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, categories)
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_item)
         optionSpinner.adapter = spinnerAdapter
 
         cancelButton.setOnClickListener {
@@ -127,6 +131,7 @@ class InventoryPage : Fragment() {
             try {
                 val priceValue = price.toDouble()
                 val newItem = InventoryItem(
+                    id = UUID.randomUUID().toString(), // Generate a unique ID
                     name = name,
                     category = category,
                     price = priceValue,
@@ -136,7 +141,10 @@ class InventoryPage : Fragment() {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         FirestoreUtils.createDocument("products", newItem.id, newItem)
-                        dialog.dismiss()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            dialog.dismiss()
+                            Toast.makeText(requireContext(), "Item added successfully", Toast.LENGTH_SHORT).show()
+                        }
                     } catch (e: Exception) {
                         CoroutineScope(Dispatchers.Main).launch {
                             Toast.makeText(requireContext(), "Error adding item: ${e.message}", Toast.LENGTH_SHORT).show()

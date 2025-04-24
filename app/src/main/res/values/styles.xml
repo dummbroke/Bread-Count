@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BottomNavigationTextStyle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
+
+    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemIconSize">24dp</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemPaddingTop">4dp</item>
+        <item name="itemPaddingBottom">5dp</item>
+        <item name="itemTextAppearanceActive">@style/BottomNavigationTextStyle</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavigationTextStyle</item>
+        <item name="itemIconTint">@color/bottom_nav_icon_color</item>
+        <item name="itemTextColor">@color/bottom_nav_text_color</item>
+        <item name="itemBackground">@drawable/nav_item_background</item>
+    </style>
+</resources> 
