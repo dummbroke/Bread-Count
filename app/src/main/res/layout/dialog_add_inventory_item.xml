@@ -42,11 +42,12 @@
                 android:id="@+id/optionSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/custom_spinner_background"
+                android:background="@drawable/spinner_background"
                 android:popupBackground="@color/creamy_vanilla"
                 android:spinnerMode="dropdown"
-                android:overlapAnchor="false"
-                android:textAlignment="textStart"/>
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:overlapAnchor="false" />
         </LinearLayout>
 
         <LinearLayout
