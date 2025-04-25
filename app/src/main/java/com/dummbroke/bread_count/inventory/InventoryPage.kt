@@ -10,19 +10,16 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dummbroke.bread_count.R
 import com.dummbroke.bread_count.adapter.InventoryAdapter
 import com.dummbroke.bread_count.model.InventoryItem
-import com.dummbroke.bread_count.utils.FirestoreUtils
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.firebase.firestore.ListenerRegistration
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.util.UUID
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,10 +35,33 @@ class InventoryPage : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private val viewModel: InventoryViewModel by viewModels()
     private lateinit var categorySpinner: Spinner
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: InventoryAdapter
-    private var firestoreListener: ListenerRegistration? = null
+
+    companion object {
+        private const val DISPLAY_BREAD = "Display Bread"
+        private const val DISPLAY_BEVERAGES = "Display Beverages"
+        private const val DELIVERY_BREAD = "Delivery Bread"
+
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param param1 Parameter 1.
+         * @param param2 Parameter 2.
+         * @return A new instance of fragment InventoryPage.
+         */
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+            InventoryPage().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)
+                }
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,9 +89,7 @@ class InventoryPage : Fragment() {
         val addItemButton = view.findViewById<ExtendedFloatingActionButton>(R.id.addItemButton)
 
         // Setup RecyclerView
-        adapter = InventoryAdapter()
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = adapter
+        setupRecyclerView()
 
         // Setup category spinner
         setupCategorySpinner()
@@ -81,15 +99,48 @@ class InventoryPage : Fragment() {
             showAddItemDialog()
         }
 
-        // Setup Firestore listener
-        setupFirestoreListener()
+        // Observe inventory items
+        lifecycleScope.launch {
+            viewModel.inventoryItems.collectLatest { items ->
+                adapter.updateItems(items)
+            }
+        }
+    }
+
+    private fun setupRecyclerView() {
+        adapter = InventoryAdapter(
+            onItemClick = { item ->
+                // Handle item click (edit)
+                showEditItemDialog(item)
+            },
+            onDeleteClick = { item ->
+                // Handle delete click
+                viewModel.deleteItem(item)
+            }
+        )
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
     }
 
     private fun setupCategorySpinner() {
-        val categories = arrayOf("Display Bread", "Display Beverages", "Delivery Bread")
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        categorySpinner.adapter = adapter
+        val categories = arrayOf(
+            InventoryViewModel.DISPLAY_BREAD,
+            InventoryViewModel.DISPLAY_BEVERAGES,
+            InventoryViewModel.DELIVERY_BREAD
+        )
+        val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_selected_item, categories)
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_item)
+        categorySpinner.adapter = spinnerAdapter
+
+        categorySpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                viewModel.setCategory(categories[position])
+            }
+
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
+                // Do nothing
+            }
+        }
     }
 
     private fun showAddItemDialog() {
@@ -109,8 +160,12 @@ class InventoryPage : Fragment() {
         val confirmButton = dialog.findViewById<android.widget.Button>(R.id.confirmButton)
 
         // Setup option spinner
-        val categories = arrayOf("Display Bread", "Display Beverages", "Delivery Bread")
-        val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, categories)
+        val categories = arrayOf(
+            InventoryViewModel.DISPLAY_BREAD,
+            InventoryViewModel.DISPLAY_BEVERAGES,
+            InventoryViewModel.DELIVERY_BREAD
+        )
+        val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_selected_item, categories)
         spinnerAdapter.setDropDownViewResource(R.layout.spinner_item)
         optionSpinner.adapter = spinnerAdapter
 
@@ -130,27 +185,9 @@ class InventoryPage : Fragment() {
 
             try {
                 val priceValue = price.toDouble()
-                val newItem = InventoryItem(
-                    id = UUID.randomUUID().toString(), // Generate a unique ID
-                    name = name,
-                    category = category,
-                    price = priceValue,
-                    quantity = 0
-                )
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        FirestoreUtils.createDocument("products", newItem.id, newItem)
-                        CoroutineScope(Dispatchers.Main).launch {
-                            dialog.dismiss()
-                            Toast.makeText(requireContext(), "Item added successfully", Toast.LENGTH_SHORT).show()
-                        }
-                    } catch (e: Exception) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            Toast.makeText(requireContext(), "Error adding item: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
+                viewModel.addItem(name, priceValue, category)
+                dialog.dismiss()
+                Toast.makeText(requireContext(), "Item added successfully", Toast.LENGTH_SHORT).show()
             } catch (e: NumberFormatException) {
                 Toast.makeText(requireContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show()
             }
@@ -159,44 +196,7 @@ class InventoryPage : Fragment() {
         dialog.show()
     }
 
-    private fun setupFirestoreListener() {
-        firestoreListener = FirestoreUtils.db.collection("products")
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    Toast.makeText(requireContext(), "Error listening to updates: ${error.message}", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
-
-                val items = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(InventoryItem::class.java)
-                } ?: emptyList()
-
-                adapter.updateItems(items)
-            }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        firestoreListener?.remove()
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment InventoryPage.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            InventoryPage().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun showEditItemDialog(item: InventoryItem) {
+        // TODO: Implement edit dialog
     }
 }

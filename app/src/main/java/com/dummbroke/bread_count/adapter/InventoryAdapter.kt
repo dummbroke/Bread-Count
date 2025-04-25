@@ -8,7 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dummbroke.bread_count.R
 import com.dummbroke.bread_count.model.InventoryItem
 
-class InventoryAdapter : RecyclerView.Adapter<InventoryAdapter.InventoryViewHolder>() {
+class InventoryAdapter(
+    private val onItemClick: (InventoryItem) -> Unit,
+    private val onDeleteClick: (InventoryItem) -> Unit
+) : RecyclerView.Adapter<InventoryAdapter.InventoryViewHolder>() {
+
     private var items: List<InventoryItem> = emptyList()
 
     fun updateItems(newItems: List<InventoryItem>) {
@@ -28,15 +32,20 @@ class InventoryAdapter : RecyclerView.Adapter<InventoryAdapter.InventoryViewHold
 
     override fun getItemCount() = items.size
 
-    class InventoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class InventoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameValue: TextView = itemView.findViewById(R.id.nameValue)
         private val priceValue: TextView = itemView.findViewById(R.id.priceValue)
         private val quantityValue: TextView = itemView.findViewById(R.id.quantityValue)
+        private val editButton: View = itemView.findViewById(R.id.editButton)
+        private val deleteButton: View = itemView.findViewById(R.id.deleteButton)
 
         fun bind(item: InventoryItem) {
             nameValue.text = item.name
             priceValue.text = String.format("%.2f", item.price)
             quantityValue.text = item.quantity.toString()
+
+            editButton.setOnClickListener { onItemClick(item) }
+            deleteButton.setOnClickListener { onDeleteClick(item) }
         }
     }
 } 

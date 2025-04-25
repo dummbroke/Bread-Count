@@ -15,4 +15,9 @@
         <!-- Customize your theme here -->
         <item name="android:windowBackground">@color/soft_pearl_white</item>
     </style>
+  <!-- Base application theme. -->
+    <style name="Base.Theme.BreadCount" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
 </resources>

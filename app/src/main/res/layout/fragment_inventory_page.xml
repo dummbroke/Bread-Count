@@ -9,8 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="56dp">
+        android:layout_height="match_parent">
 
         <!-- Header -->
         <com.google.android.material.appbar.AppBarLayout
@@ -56,11 +55,11 @@
                 android:id="@+id/categorySpinner"
                 android:layout_width="200dp"
                 android:layout_height="48dp"
-                android:background="@drawable/spinner_background"
+                android:background="@drawable/custom_spinner_background"
                 android:popupBackground="@color/creamy_vanilla"
                 android:spinnerMode="dropdown"
-                android:paddingStart="10dp"
-                android:paddingEnd="5dp"/>
+                android:overlapAnchor="false"
+                android:textAlignment="textStart"/>
         </LinearLayout>
 
         <!-- RecyclerView Container -->
@@ -88,12 +87,12 @@
             android:id="@+id/addItemButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
             android:backgroundTint="@color/electric_blue"
             android:text="Add Item"
             android:textColor="@color/white"
             app:icon="@drawable/id_edit"
             app:iconTint="@color/white"
+            android:layout_marginBottom="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
