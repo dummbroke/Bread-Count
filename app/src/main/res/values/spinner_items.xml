@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="bread_categories">
+        <item>All Option</item>
+        <item>Display Bread</item>
+        <item>Display Beverages</item>
+        <item>Delivery Bread</item>
+    </string-array>
+</resources> 
