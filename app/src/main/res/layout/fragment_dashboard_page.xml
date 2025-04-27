@@ -85,23 +85,13 @@
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/displayBreadRecycler"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="5 Peso Bread: 100 left"
-                                android:textColor="@color/graphite_black" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="2 Peso Bread: 40 left"
-                                android:textColor="@color/graphite_black" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="10 Peso Bread: 570 left"
-                                android:textColor="@color/graphite_black" />
+                                android:overScrollMode="never"
+                                android:nestedScrollingEnabled="false"
+                                android:layout_marginTop="8dp"/>
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -149,23 +139,13 @@
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/displayBeveragesRecycler"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="25 Peso Drink: 100 left"
-                                android:textColor="@color/graphite_black" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="20 Peso Bread: 40 left"
-                                android:textColor="@color/graphite_black" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="55 Peso Bread: 570 left"
-                                android:textColor="@color/graphite_black" />
+                                android:overScrollMode="never"
+                                android:nestedScrollingEnabled="false"
+                                android:layout_marginTop="8dp"/>
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -212,23 +192,13 @@
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/deliveryBreadRecycler"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="5 Peso Bread: 100 left"
-                                android:textColor="@color/graphite_black" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="2 Peso Bread: 40 left"
-                                android:textColor="@color/graphite_black" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="10 Peso Bread: 570 left"
-                                android:textColor="@color/graphite_black" />
+                                android:overScrollMode="never"
+                                android:nestedScrollingEnabled="false"
+                                android:layout_marginTop="8dp"/>
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
