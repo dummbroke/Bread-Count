@@ -326,7 +326,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/itemSpinner" />
 
                     <EditText
-                        android:id="@+id/editText"
+                        android:id="@+id/quantityEditText"
                         android:layout_width="80dp"
                         android:layout_height="48dp"
                         android:background="@drawable/edit_text_bg"
@@ -341,6 +341,7 @@
 
 
                     <ImageButton
+                        android:id="@+id/plusButton"
                         android:layout_width="48sp"
                         android:layout_height="48sp"
                         android:adjustViewBounds="true"
@@ -348,20 +349,21 @@
                         android:padding="4dp"
                         android:scaleType="fitCenter"
                         android:src="@drawable/add_button"
-                        app:layout_constraintBottom_toBottomOf="@+id/editText"
-                        app:layout_constraintStart_toEndOf="@+id/editText"
-                        app:layout_constraintTop_toTopOf="@+id/editText"
+                        app:layout_constraintBottom_toBottomOf="@+id/quantityEditText"
+                        app:layout_constraintStart_toEndOf="@+id/quantityEditText"
+                        app:layout_constraintTop_toTopOf="@+id/quantityEditText"
                         app:layout_constraintVertical_bias="0.5" />
 
                     <ImageButton
+                        android:id="@+id/minusButton"
                         android:layout_width="20sp"
-                        android:layout_height="3.5sp"
+                        android:layout_height="20sp"
                         android:layout_marginEnd="13dp"
                         android:backgroundTint="@color/soft_pearl_white"
                         android:src="@drawable/minus_ic_button"
-                        app:layout_constraintBottom_toBottomOf="@+id/editText"
-                        app:layout_constraintEnd_toStartOf="@+id/editText"
-                        app:layout_constraintTop_toTopOf="@+id/editText" />
+                        app:layout_constraintBottom_toBottomOf="@+id/quantityEditText"
+                        app:layout_constraintEnd_toStartOf="@+id/quantityEditText"
+                        app:layout_constraintTop_toTopOf="@+id/quantityEditText" />
 
                     <Switch
                         android:id="@+id/ownerSwitch"
@@ -378,11 +380,12 @@
                         app:layout_constraintTop_toBottomOf="@+id/ownerLabel" />
 
                     <EditText
-                        android:id="@+id/editText2"
+                        android:id="@+id/ownerName"
                         android:layout_width="150dp"
                         android:layout_height="48dp"
                         android:layout_marginTop="180dp"
                         android:hint="Enter Name"
+                        android:textColorHint="#666666"
                         android:textSize="18sp"
                         android:background="@drawable/edit_text_bg"
                         android:textAlignment="center"
@@ -402,7 +405,7 @@
                         android:textColor="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/editText2" />
+                        app:layout_constraintTop_toBottomOf="@+id/ownerName" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

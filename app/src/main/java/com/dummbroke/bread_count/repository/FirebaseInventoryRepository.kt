@@ -142,4 +142,52 @@ class FirebaseInventoryRepository {
             .delete()
             .await()
     }
+
+    /**
+     * Record a sales transaction in Firestore and update inventory quantity if not owner.
+     */
+    suspend fun recordTransaction(
+        item: InventoryItem,
+        quantity: Int,
+        isOwner: Boolean,
+        ownerName: String
+    ) {
+        if (currentUser == null) throw Exception("User not authenticated")
+
+        val totalAmount = item.price * quantity
+        val transactionData = hashMapOf(
+            "itemId" to item.id,
+            "itemName" to item.name,
+            "category" to item.category,
+            "quantity" to quantity,
+            "price" to item.price,
+            "isOwner" to isOwner,
+            "ownerName" to ownerName,
+            "totalAmount" to totalAmount,
+            "timestamp" to com.google.firebase.Timestamp.now()
+        )
+
+        val userDoc = db.collection(USERS_COLLECTION).document(currentUser.uid)
+        val transactionsCol = userDoc.collection("transactions")
+        val transactionDoc = transactionsCol.document()
+
+        // Start a batch to ensure atomicity if updating inventory
+        val batch = db.batch()
+        batch.set(transactionDoc, transactionData)
+
+        if (!isOwner) {
+            // Update inventory quantity (subtract sold quantity)
+            val categoryKey = when (item.category) {
+                "Display Bread" -> DISPLAY_BREAD
+                "Display Beverages" -> DISPLAY_BEVERAGES
+                "Delivery Bread" -> DELIVERY_BREAD
+                else -> item.category
+            }
+            val itemDoc = userDoc.collection(categoryKey).document(item.id)
+            val newQuantity = (item.quantity - quantity).coerceAtLeast(0)
+            batch.update(itemDoc, "quantity", newQuantity)
+        }
+
+        batch.commit().await()
+    }
 }
