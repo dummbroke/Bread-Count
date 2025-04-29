@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Update Item Quantity"
+            android:text="Enter Item Quantity"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
@@ -38,14 +38,6 @@
             android:gravity="center"
             android:layout_marginBottom="24dp">
 
-            <ImageButton
-                android:id="@+id/decrementButton"
-                android:layout_width="20sp"
-                android:layout_height="3.5sp"
-                android:layout_marginEnd="13dp"
-                android:backgroundTint="@color/soft_pearl_white"
-                android:src="@drawable/minus_ic_button"/>
-
             <EditText
                 android:id="@+id/quantityEditText"
                 android:layout_width="80dp"
@@ -53,19 +45,9 @@
                 android:background="@drawable/edit_text_bg"
                 android:inputType="number"
                 android:textAlignment="center"
-                android:text="2"
+                android:hint="1"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"/>
-
-            <ImageButton
-                android:id="@+id/incrementButton"
-                android:layout_width="48sp"
-                android:layout_height="48sp"
-                android:adjustViewBounds="true"
-                android:backgroundTint="@color/soft_pearl_white"
-                android:padding="4dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/add_button"/>
         </LinearLayout>
 
         <LinearLayout
@@ -88,7 +70,7 @@
                 android:id="@+id/updateButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Update"
+                android:text="Confirm"
                 android:textColor="@android:color/white"
                 android:backgroundTint="#FFB84D"
                 app:cornerRadius="24dp"/>

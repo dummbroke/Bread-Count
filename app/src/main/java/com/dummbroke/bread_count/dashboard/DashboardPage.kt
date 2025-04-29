@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
@@ -112,31 +113,48 @@ class DashboardViewModel : ViewModel() {
         val quantity = state.quantity
         val isOwner = state.isOwner
         val ownerName = state.ownerName
-        if (isOwner && ownerName.isBlank()) return // Require owner name if owner
+
+        if (isOwner && ownerName.isBlank()) {
+            _uiState.value = state.copy(
+                error = "Owner name is required when marking as owner",
+                isRecording = false
+            )
+            return
+        }
+
         viewModelScope.launch {
-            _uiState.value = state.copy(isRecording = true)
+            _uiState.value = state.copy(isRecording = true, error = null)
             try {
-                // Record transaction (pseudo-code, implement in repository as needed)
+                // Record transaction will handle inventory update internally
+                // and will throw an exception if there's not enough quantity
                 repository.recordTransaction(
                     item = item,
                     quantity = quantity,
                     isOwner = isOwner,
                     ownerName = ownerName
                 )
+
                 // Show confirmation for 1 second
                 _uiState.value = state.copy(showConfirmation = true, isRecording = false)
                 kotlinx.coroutines.delay(1000)
-                // Reset only quantity, owner switch, and owner name, but keep category and item
+                
+                // Reset form but keep category and refresh lists
                 _uiState.value = state.copy(
                     quantity = 1,
                     isOwner = false,
                     ownerName = "",
                     isRecording = false,
-                    showConfirmation = false
+                    showConfirmation = false,
+                    error = null
                 )
+
+                // Refresh all lists to show updated quantities
+                loadAllCategories()
             } catch (e: Exception) {
-                // Handle error (could add error state to DashboardUiState if needed)
-                _uiState.value = state.copy(isRecording = false)
+                _uiState.value = state.copy(
+                    isRecording = false,
+                    error = e.message ?: "Failed to submit transaction"
+                )
             }
         }
     }
@@ -198,6 +216,7 @@ class DashboardPage : Fragment() {
         setupRecyclerViews(view)
         observeViewModel()
         setupTransactionRecorder(view)
+        setupTouchHandling(view)
     }
 
     private fun setupRecyclerViews(view: View) {
@@ -250,6 +269,32 @@ class DashboardPage : Fragment() {
         }
     }
 
+    private fun setupTouchHandling(view: View) {
+        // Get the root layout
+        val rootLayout = view.findViewById<View>(R.id.formSection)
+        
+        // Setup touch listener for hiding keyboard and clearing focus
+        rootLayout.setOnTouchListener { v, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                // Get references to EditTexts
+                val quantityEditText = view.findViewById<android.widget.EditText>(R.id.quantityEditText)
+                val ownerNameEditText = view.findViewById<android.widget.EditText>(R.id.ownerName)
+                
+                // Check if EditTexts have focus
+                if (quantityEditText.hasFocus() || ownerNameEditText.hasFocus()) {
+                    // Get window token from the root layout
+                    val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.windowToken, 0)
+                    
+                    // Clear focus from both EditTexts
+                    quantityEditText.clearFocus()
+                    ownerNameEditText.clearFocus()
+                }
+            }
+            false
+        }
+    }
+
     private fun setupTransactionRecorder(view: View) {
         val categorySpinner = view.findViewById<android.widget.Spinner>(R.id.categorySpinner)
         val itemSpinner = view.findViewById<android.widget.Spinner>(R.id.itemSpinner)
@@ -259,6 +304,21 @@ class DashboardPage : Fragment() {
         val ownerSwitch = view.findViewById<android.widget.Switch>(R.id.ownerSwitch)
         val ownerNameEditText = view.findViewById<android.widget.EditText>(R.id.ownerName)
         val submitButton = view.findViewById<android.widget.Button>(R.id.submitButton)
+
+        // Setup focus change listeners
+        quantityEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+            }
+        }
+
+        ownerNameEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+            }
+        }
 
         // Setup category spinner with custom layout for visibility
         val categories = listOf("Display Bread", "Display Beverages", "Delivery Bread")
@@ -287,21 +347,55 @@ class DashboardPage : Fragment() {
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         }
 
-        // Quantity edit text and plus/minus buttons
+        // Setup quantity EditText
         quantityEditText.setText("1")
-        quantityEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                val qty = quantityEditText.text.toString().toIntOrNull() ?: 1
-                viewModel.onQuantityChanged(qty)
+        quantityEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val newText = s?.toString() ?: ""
+                if (newText.isNotEmpty()) {
+                    val newQuantity = newText.toIntOrNull() ?: 1
+                    viewModel.onQuantityChanged(newQuantity)
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {
+                if (s?.toString().isNullOrEmpty()) {
+                    quantityEditText.setText("1")
+                    quantityEditText.setSelection(1)
+                }
+            }
+        })
+
+        // Handle IME Done button
+        quantityEditText.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                // Hide keyboard
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+                // Clear focus
+                v.clearFocus()
+                true
+            } else {
+                false
             }
         }
+
         plusButton.setOnClickListener {
-            val qty = quantityEditText.text.toString().toIntOrNull() ?: 1
-            viewModel.onQuantityChanged(qty + 1)
+            val currentText = quantityEditText.text.toString()
+            val currentQty = currentText.toIntOrNull() ?: 1
+            val newQty = currentQty + 1
+            quantityEditText.setText(newQty.toString())
+            viewModel.onQuantityChanged(newQty)
         }
+
         minusButton.setOnClickListener {
-            val qty = quantityEditText.text.toString().toIntOrNull() ?: 1
-            viewModel.onQuantityChanged(qty - 1)
+            val currentText = quantityEditText.text.toString()
+            val currentQty = currentText.toIntOrNull() ?: 1
+            if (currentQty > 1) {
+                val newQty = currentQty - 1
+                quantityEditText.setText(newQty.toString())
+                viewModel.onQuantityChanged(newQty)
+            }
         }
 
         // Owner switch and name logic
@@ -360,6 +454,11 @@ class DashboardPage : Fragment() {
         val ownerSwitch = view.findViewById<android.widget.Switch>(R.id.ownerSwitch)
         val ownerNameEditText = view.findViewById<android.widget.EditText>(R.id.ownerName)
         val submitButton = view.findViewById<android.widget.Button>(R.id.submitButton)
+
+        // Handle error state
+        if (state.error != null) {
+            Toast.makeText(requireContext(), state.error, Toast.LENGTH_SHORT).show()
+        }
 
         // Update item spinner with custom layout for visibility
         val itemAdapter = object : android.widget.ArrayAdapter<com.dummbroke.bread_count.model.InventoryItem>(

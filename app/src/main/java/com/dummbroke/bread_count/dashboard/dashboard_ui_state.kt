@@ -13,5 +13,6 @@ data class DashboardUiState(
     val isOwner: Boolean = false,
     val ownerName: String = "",
     val isRecording: Boolean = false,
-    val showConfirmation: Boolean = false
+    val showConfirmation: Boolean = false,
+    val error: String? = null
 ) 

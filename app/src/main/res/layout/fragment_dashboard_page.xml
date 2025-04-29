@@ -5,16 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/soft_pearl_white"
+    android:fitsSystemWindows="true"
     tools:context=".dashboard.DashboardPage">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:fadeScrollbars="false"
+        android:scrollbars="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="80dp">
 
             <!-- Header -->
             <com.google.android.material.appbar.AppBarLayout
@@ -330,10 +334,16 @@
                         android:layout_width="80dp"
                         android:layout_height="48dp"
                         android:background="@drawable/edit_text_bg"
-                        android:inputType="number"
                         android:textAlignment="center"
                         android:textColor="@color/graphite_black"
                         android:textSize="16sp"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:hint="1"
+                        android:textColorHint="@color/graphite_black"
+                        android:imeOptions="actionDone"
+                        android:singleLine="true"
+                        android:focusableInTouchMode="true"
                         android:layout_marginTop="4dp"
                         app:layout_constraintEnd_toEndOf="@+id/quantityLabel"
                         app:layout_constraintStart_toStartOf="@+id/quantityLabel"
@@ -391,6 +401,10 @@
                         android:textAlignment="center"
                         android:gravity="center"
                         android:padding="8dp"
+                        android:imeOptions="actionDone"
+                        android:singleLine="true"
+                        android:focusableInTouchMode="true"
+                        android:inputType="text"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/sectionTitle" />

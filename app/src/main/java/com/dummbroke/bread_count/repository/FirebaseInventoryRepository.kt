@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import com.google.firebase.firestore.WriteBatch
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.firestore.Transaction
 
 class FirebaseInventoryRepository {
     private val auth = FirebaseAuth.getInstance()
@@ -154,40 +155,55 @@ class FirebaseInventoryRepository {
     ) {
         if (currentUser == null) throw Exception("User not authenticated")
 
-        val totalAmount = item.price * quantity
-        val transactionData = hashMapOf(
-            "itemId" to item.id,
-            "itemName" to item.name,
-            "category" to item.category,
-            "quantity" to quantity,
-            "price" to item.price,
-            "isOwner" to isOwner,
-            "ownerName" to ownerName,
-            "totalAmount" to totalAmount,
-            "timestamp" to com.google.firebase.Timestamp.now()
-        )
-
         val userDoc = db.collection(USERS_COLLECTION).document(currentUser.uid)
-        val transactionsCol = userDoc.collection("transactions")
-        val transactionDoc = transactionsCol.document()
-
-        // Start a batch to ensure atomicity if updating inventory
-        val batch = db.batch()
-        batch.set(transactionDoc, transactionData)
-
-        if (!isOwner) {
-            // Update inventory quantity (subtract sold quantity)
-            val categoryKey = when (item.category) {
-                "Display Bread" -> DISPLAY_BREAD
-                "Display Beverages" -> DISPLAY_BEVERAGES
-                "Delivery Bread" -> DELIVERY_BREAD
-                else -> item.category
-            }
-            val itemDoc = userDoc.collection(categoryKey).document(item.id)
-            val newQuantity = (item.quantity - quantity).coerceAtLeast(0)
-            batch.update(itemDoc, "quantity", newQuantity)
+        
+        // Get the category key
+        val categoryKey = when (item.category) {
+            "Display Bread" -> DISPLAY_BREAD
+            "Display Beverages" -> DISPLAY_BEVERAGES
+            "Delivery Bread" -> DELIVERY_BREAD
+            else -> item.category
         }
 
-        batch.commit().await()
+        try {
+            // Use a transaction instead of a batch to ensure atomicity
+            db.runTransaction { transaction ->
+                // Get fresh item data within the transaction
+                val itemDoc = userDoc.collection(categoryKey).document(item.id)
+                val currentItemSnapshot = transaction.get(itemDoc)
+                val currentQuantity = (currentItemSnapshot.data?.get("quantity") as? Number)?.toInt()
+                    ?: throw Exception("Item not found or invalid quantity")
+
+                // Only validate quantity for non-owner transactions
+                if (!isOwner && currentQuantity < quantity) {
+                    throw Exception("Not enough inventory. Only $currentQuantity available.")
+                }
+
+                val totalAmount = item.price * quantity
+                val transactionData = hashMapOf(
+                    "itemId" to item.id,
+                    "itemName" to item.name,
+                    "category" to item.category,
+                    "quantity" to quantity,
+                    "price" to item.price,
+                    "isOwner" to isOwner,
+                    "ownerName" to ownerName,
+                    "totalAmount" to totalAmount,
+                    "timestamp" to com.google.firebase.Timestamp.now()
+                )
+
+                // Create transaction document
+                val transactionDoc = userDoc.collection("transactions").document()
+                transaction.set(transactionDoc, transactionData)
+
+                // Always update the quantity, regardless of owner status
+                val newQuantity = (currentQuantity - quantity).coerceAtLeast(0)
+                transaction.update(itemDoc, "quantity", newQuantity)
+
+                // Transaction automatically commits if no exception is thrown
+            }.await()
+        } catch (e: Exception) {
+            throw Exception("Failed to update inventory: ${e.message}")
+        }
     }
 }
