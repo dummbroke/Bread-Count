@@ -3,21 +3,30 @@
 
     <style name="Theme.BreadCount" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/electric_blue</item>
-        <item name="colorPrimaryVariant">@color/charcoal_gray</item>
+        <item name="colorPrimary">@color/nav_selected</item>
+        <item name="colorPrimaryVariant">@color/nav_background</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/golden_honey</item>
-        <item name="colorSecondaryVariant">@color/soft_latte_beige</item>
-        <item name="colorOnSecondary">@color/graphite_black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here -->
+        <item name="colorSecondary">@color/nav_selected</item>
+        <item name="colorSecondaryVariant">@color/nav_background</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- System bars and edge-to-edge -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+        <!-- Window background -->
         <item name="android:windowBackground">@color/soft_pearl_white</item>
     </style>
   <!-- Base application theme. -->
     <style name="Base.Theme.BreadCount" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>

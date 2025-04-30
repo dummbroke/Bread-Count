@@ -4,13 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.dummbroke.bread_count.MainActivity
 import com.dummbroke.bread_count.R
 import com.dummbroke.bread_count.databinding.ActivitySignUpBinding
-import com.dummbroke.bread_count.BottomNavigationBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -18,12 +20,35 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
+@Suppress("DEPRECATION")
 class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-    private val RC_SIGN_IN = 9001
     private val TAG = "SignUpActivity"
+    
+    // For double-tap exit
+    private var backPressedTime: Long = 0
+    private var backToast: Toast? = null
+
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        Log.d(TAG, "Google Sign-In result received")
+        if (result.resultCode == RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                Log.d(TAG, "Google Sign-In successful, account: ${account?.email}")
+                account?.idToken?.let { firebaseAuthWithGoogle(it) }
+            } catch (e: ApiException) {
+                Log.e(TAG, "Google Sign-In failed during result processing: ${e.statusCode} - ${e.message}")
+                Toast.makeText(this, "Google sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Log.w(TAG, "Google Sign-In cancelled or failed with resultCode: ${result.resultCode}")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +57,9 @@ class SignUpActivity : AppCompatActivity() {
         setContentView(binding.root)
         enableEdgeToEdge()
 
-        // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
         Log.d(TAG, "Firebase Auth initialized")
 
-        // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -47,6 +70,33 @@ class SignUpActivity : AppCompatActivity() {
 
         setupClickListeners()
         setupWindowInsets()
+        
+        // Add the custom back press callback
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
+    // Custom back press logic
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            // If this is the only activity in the task stack (launcher activity)
+            if (isTaskRoot) { 
+                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                    backToast?.cancel()
+                    // Finish the activity, which will close the app if it's the root
+                    finish() 
+                    return
+                } else {
+                    backToast = Toast.makeText(baseContext, "Press back again to exit", Toast.LENGTH_SHORT)
+                    backToast?.show()
+                }
+                backPressedTime = System.currentTimeMillis()
+            } else {
+                // If not the root, allow normal back press behavior (finish current activity)
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                 isEnabled = true // Re-enable afterwards, though likely not needed as activity finishes
+            }
+        }
     }
 
     private fun setupClickListeners() {
@@ -63,8 +113,8 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.signInButton.setOnClickListener {
             Log.d(TAG, "Sign In button clicked")
-            startActivity(Intent(this, SignInActivity::class.java))
-            finish()
+            // Simply finish this activity to go back to SignInActivity
+            finish() 
         }
     }
 
@@ -108,25 +158,7 @@ class SignUpActivity : AppCompatActivity() {
     private fun signInWithGoogle() {
         Log.d(TAG, "Starting Google Sign-In flow")
         val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "onActivityResult called with requestCode: $requestCode")
-
-        if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                Log.d(TAG, "Google Sign-In successful, authenticating with Firebase")
-                val account = task.getResult(ApiException::class.java)!!
-                firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: ApiException) {
-                Log.e(TAG, "Google Sign-In failed: ${e.message}")
-                Toast.makeText(this, "Google sign in failed: ${e.message}",
-                    Toast.LENGTH_SHORT).show()
-            }
-        }
+        googleSignInLauncher.launch(signInIntent)
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
@@ -147,13 +179,13 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun navigateToDashboard() {
         Log.d(TAG, "Navigating to Dashboard")
-        startActivity(Intent(this, BottomNavigationBar::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
     private fun setupWindowInsets() {
         Log.d(TAG, "Setting up window insets")
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

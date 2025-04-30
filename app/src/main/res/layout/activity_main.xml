@@ -3,28 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        android:fitsSystemWindows="false"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+        android:id="@+id/bottomNavigationView"
+        style="@style/BottomNavigationStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/espresso_black"
-        app:itemIconTint="@color/bottom_nav_item_color"
-        app:itemTextColor="@color/bottom_nav_item_color"
+        android:fitsSystemWindows="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

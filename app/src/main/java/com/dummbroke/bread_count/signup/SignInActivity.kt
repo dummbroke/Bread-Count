@@ -4,14 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.dummbroke.bread_count.MainActivity
 import com.dummbroke.bread_count.R
 import com.dummbroke.bread_count.databinding.ActivitySignInBinding
-import com.dummbroke.bread_count.BottomNavigationBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -20,12 +21,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.GoogleAuthProvider
 
+// Suppress specific deprecation warnings for GoogleSignIn API
+@Suppress("DEPRECATION")
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private val TAG = "SignInActivity"
     private var authStateListener: AuthStateListener? = null
+
+    // For double-tap exit
+    private var backPressedTime: Long = 0
+    private var backToast: Toast? = null
 
     // Register for activity result
     private val googleSignInLauncher = registerForActivityResult(
@@ -68,6 +75,33 @@ class SignInActivity : AppCompatActivity() {
         setupClickListeners()
         setupWindowInsets()
         setupAuthStateListener()
+        
+        // Add the custom back press callback
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
+    // Custom back press logic
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            // If this is the only activity in the task stack (launcher activity)
+            if (isTaskRoot) { 
+                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                    backToast?.cancel()
+                    // Finish the activity, which will close the app if it's the root
+                    finish() 
+                    return
+                } else {
+                    backToast = Toast.makeText(baseContext, "Press back again to exit", Toast.LENGTH_SHORT)
+                    backToast?.show()
+                }
+                backPressedTime = System.currentTimeMillis()
+            } else {
+                // If not the root, allow normal back press behavior (finish current activity)
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true // Re-enable afterwards, though likely not needed as activity finishes
+            }
+        }
     }
 
     private fun setupAuthStateListener() {
@@ -169,13 +203,13 @@ class SignInActivity : AppCompatActivity() {
 
     private fun navigateToDashboard() {
         Log.d(TAG, "Navigating to Dashboard")
-        startActivity(Intent(this, BottomNavigationBar::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
     private fun setupWindowInsets() {
         Log.d(TAG, "Setting up window insets")
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

@@ -94,10 +94,10 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/electric_blue"
             android:text="Add Item"
+            android:layout_marginBottom="24dp"
             android:textColor="@color/white"
             app:icon="@drawable/id_edit"
             app:iconTint="@color/white"
-            android:layout_marginBottom="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
