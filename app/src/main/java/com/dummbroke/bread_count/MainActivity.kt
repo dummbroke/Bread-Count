@@ -21,6 +21,9 @@ import com.dummbroke.bread_count.databinding.ActivityMainBinding
 import com.dummbroke.bread_count.signup.SignInActivity
 import com.dummbroke.bread_count.utils.NavigationHandler
 import com.google.firebase.auth.FirebaseAuth
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import android.view.Gravity
 
 class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedListener {
     private lateinit var auth: FirebaseAuth
@@ -31,6 +34,9 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
     // For double-tap exit
     private var backPressedTime: Long = 0
     private var backToast: Toast? = null
+
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +67,20 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
         
         // Add the custom back press callback
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
+        // Drawer setup
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.navigationView)
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_logout -> {
+                    showLogoutDialog()
+                    drawerLayout.closeDrawers()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     // Listener for back stack changes
@@ -183,5 +203,31 @@ class MainActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedList
         // Remove listener to prevent memory leaks
         supportFragmentManager.removeOnBackStackChangedListener(this)
         super.onDestroy()
+    }
+
+    fun openDrawer() {
+        drawerLayout.openDrawer(Gravity.START)
+    }
+
+    private fun showLogoutDialog() {
+        val dialog = android.app.Dialog(this)
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_logout_confirmation)
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+        dialog.findViewById<android.widget.Button>(R.id.cancelButton).setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.findViewById<android.widget.Button>(R.id.confirmButton).setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            startActivity(Intent(this, com.dummbroke.bread_count.signup.SignInActivity::class.java))
+            finish()
+            dialog.dismiss()
+        }
+        dialog.show()
+        // Fix: Set dialog width to 90% of screen width
+        val width = (resources.displayMetrics.widthPixels * 0.90).toInt()
+        dialog.window?.setLayout(width, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 } 

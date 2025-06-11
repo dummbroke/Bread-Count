@@ -25,6 +25,14 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Locale
 import android.util.Log
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.Window
+import android.widget.Button
+import android.widget.ImageButton
+import com.google.firebase.auth.FirebaseAuth
+import android.app.Dialog
+import com.dummbroke.bread_count.signup.SignInActivity
 
 class TransactionPage : Fragment() {
 
@@ -73,6 +81,7 @@ class TransactionPage : Fragment() {
         setupRecyclerView()
         setupSpinner()
         setupExportButton()
+        setupMenuButton(view)
         observeViewModel()
     }
 
@@ -177,6 +186,12 @@ class TransactionPage : Fragment() {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(requireContext(), "No application found to open CSV files.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupMenuButton(view: View) {
+        view.findViewById<ImageButton>(R.id.menuButton).setOnClickListener {
+            (activity as? com.dummbroke.bread_count.MainActivity)?.openDrawer()
         }
     }
 

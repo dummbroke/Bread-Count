@@ -27,6 +27,15 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.content.Intent
+import android.view.Window
+import android.widget.Button
+import android.widget.ImageButton
+import com.google.firebase.auth.FirebaseAuth
+import android.app.Dialog
+import com.dummbroke.bread_count.signup.SignInActivity
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -217,6 +226,7 @@ class DashboardPage : Fragment() {
         observeViewModel()
         setupTransactionRecorder(view)
         setupTouchHandling(view)
+        setupMenuButton(view)
     }
 
     private fun setupRecyclerViews(view: View) {
@@ -525,6 +535,12 @@ class DashboardPage : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             kotlinx.coroutines.delay(1000)
             dialog.dismiss()
+        }
+    }
+
+    private fun setupMenuButton(view: View) {
+        view.findViewById<ImageButton>(R.id.menuButton).setOnClickListener {
+            (activity as? com.dummbroke.bread_count.MainActivity)?.openDrawer()
         }
     }
 }

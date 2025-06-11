@@ -50,4 +50,8 @@
     <!-- Action Button Colors -->
     <color name="fab_background">@color/electric_blue</color>
     <color name="fab_icon">@color/soft_pearl_white</color>
+
+    <!-- New Colors -->
+    <color name="gray">#444444</color>
+    <color name="primary">#2962FF</color>
 </resources>

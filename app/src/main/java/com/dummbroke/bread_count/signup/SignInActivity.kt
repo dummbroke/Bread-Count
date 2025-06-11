@@ -3,7 +3,6 @@ package com.dummbroke.bread_count.signup
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,7 +31,6 @@ class SignInActivity : AppCompatActivity() {
 
     // For double-tap exit
     private var backPressedTime: Long = 0
-    private var backToast: Toast? = null
 
     // Register for activity result
     private val googleSignInLauncher = registerForActivityResult(
@@ -48,7 +46,6 @@ class SignInActivity : AppCompatActivity() {
         } catch (e: ApiException) {
             // Google Sign In failed
             Log.e(TAG, "Google Sign-In failed: ${e.statusCode} - ${e.message}")
-            Toast.makeText(this, "Google sign in failed: ${e.statusCode} - ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -86,13 +83,10 @@ class SignInActivity : AppCompatActivity() {
             // If this is the only activity in the task stack (launcher activity)
             if (isTaskRoot) { 
                  if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                    backToast?.cancel()
                     // Finish the activity, which will close the app if it's the root
                     finish() 
                     return
                 } else {
-                    backToast = Toast.makeText(baseContext, "Press back again to exit", Toast.LENGTH_SHORT)
-                    backToast?.show()
                 }
                 backPressedTime = System.currentTimeMillis()
             } else {
@@ -162,7 +156,6 @@ class SignInActivity : AppCompatActivity() {
 
         if (email.isEmpty() || password.isEmpty()) {
             Log.w(TAG, "Sign in failed: Empty email or password")
-            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -173,16 +166,15 @@ class SignInActivity : AppCompatActivity() {
                     // Auth state listener will handle navigation
                 } else {
                     Log.e(TAG, "Email sign in failed: ${task.exception?.message}")
-                    Toast.makeText(this, "Authentication failed: ${task.exception?.message}",
-                        Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
     private fun signInWithGoogle() {
         Log.d(TAG, "Starting Google Sign-In flow")
-        val signInIntent = googleSignInClient.signInIntent
-        googleSignInLauncher.launch(signInIntent)
+        googleSignInClient.signOut().addOnCompleteListener {
+            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+        }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
@@ -195,8 +187,6 @@ class SignInActivity : AppCompatActivity() {
                     // Auth state listener will handle navigation
                 } else {
                     Log.e(TAG, "Firebase authentication with Google failed: ${task.exception?.message}")
-                    Toast.makeText(this, "Authentication failed: ${task.exception?.message}",
-                        Toast.LENGTH_SHORT).show()
                 }
             }
     }
